@@ -11,7 +11,7 @@
 <!-- 🌸 TOP BAR -->
 <div class="topbar">
     <span class="menu-btn" onclick="openMenu()">☰</span>
-    <h2>Noella Luxe 👜✨</h2>
+    <h2>Noella Luxe 👜</h2>
 </div>
 
 <!-- 📱 SIDE MENU -->
@@ -19,16 +19,16 @@
 
     <a href="javascript:void(0)" class="closebtn" onclick="closeMenu()">×</a>
 
-    <a href="home.php">Home 🏠</a>
+    
     <a href="products.php">Shop 👜</a>
     <a href="cart.php">Cart 🛒</a>
     <a href="admin_dashboard.php">Admin dashboard</a>
 
     <?php if(isset($_SESSION['user'])) { ?>
-        <a href="admin_dashboard.php">Admin 👑</a>
-        <a href="logout.php">Logout 🚪</a>
+        <a href="admin_dashboard.php">Admin </a>
+        <a href="logout.php">Logout </a>
     <?php } else { ?>
-        <a href="login.php">Login 🔐</a>
+        <a href="login.php">Login </a>
         <a href="register.php">Register ✍️</a>
     <?php } ?>
 
@@ -36,7 +36,7 @@
 
 <!-- HERO TITLE -->
 <div class="container">
-    <h1>Welcome to Bags Collection 💖👜</h1>
+    <h1>Welcome to Bags Collection 👜</h1>
     <p style="text-align:center;">Luxury • Coach • Affordable • School Bags 🎒</p>
 </div>
 
@@ -80,7 +80,7 @@
 <!-- CALL TO ACTION -->
 <div class="container" style="text-align:center;">
     <a href="products.php">
-        <button>Shop All Bags 👜💖</button>
+        <button>Shop All Bags 👜</button>
     </a>
 </div>
 <script>
@@ -95,7 +95,7 @@ function closeMenu() {
 
 <!-- FOOTER -->
 <footer>
-    <p>Made with 💖 by Noella | Bags Collection Shop</p>
+    <p>Made by Noella | Bags Collection Shop</p>
 </footer>
 
 

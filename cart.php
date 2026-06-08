@@ -34,7 +34,7 @@ if (isset($_GET['remove'])) {
 
 <link rel="stylesheet" href="style.css">
 
-<h2>Your Cart 🛍️💖</h2>
+<h2>Your Cart 🛍️</h2>
 
 <a href="products.php">← Continue Shopping</a>
 
@@ -86,7 +86,7 @@ foreach ($_SESSION['cart'] as $id => $qty) {
 <?php } ?>
 
 <tr>
-    <td colspan="4"><strong>Grand Total 💖</strong></td>
+    <td colspan="4"><strong>Grand Total </strong></td>
     <td colspan="2">Ksh <?php echo $total; ?></td>
 </tr>
 

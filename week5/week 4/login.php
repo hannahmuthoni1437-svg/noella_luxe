@@ -21,11 +21,11 @@ if (isset($_POST['login'])) {
             exit();
 
         } else {
-            $error = "Invalid email or password ";
+            $error = "Invalid email or password 💔";
         }
 
     } else {
-        $error = "Invalid email or password ";
+        $error = "Invalid email or password 💔";
     }
 }
 
@@ -34,15 +34,15 @@ if (isset($_POST['login'])) {
 <link rel="stylesheet" href="style.css">
 
 <div class="login-container">
-    <h2>Login to Noella Luxe 👜</h2>
+    <h2>Login to Noella Luxe 👜✨</h2>
 
     <?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
     <form method="POST">
-        <input type="email" name="email" placeholder="Email " required>
-        <input type="password" name="password" placeholder="Password " required>
+        <input type="email" name="email" placeholder="Email 💌" required>
+        <input type="password" name="password" placeholder="Password 🔒" required>
 
-        <button name="login">Login </button>
+        <button name="login">Login 💖</button>
     </form>
 </div>
 <p>No account? <a href="register.php">Register 💅</a></p>

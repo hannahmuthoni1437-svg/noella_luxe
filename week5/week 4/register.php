@@ -3,30 +3,13 @@ include("db.php");
 
 $error = "";
 
-
-
 if(isset($_POST['register'])){
-
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    $sql = "INSERT INTO users (email, password) VALUES ('$email', '$password')";
-    mysqli_query($conn, $sql);
-
-    echo "Registration Successful!";
-}
-if(isset($_POST['register'])){
-
-$email = strtolower(trim($_POST['email']));
+    $email = strtolower(trim($_POST['email']));
     $password = trim($_POST['password']);
-    $confirm_password = $_POST['confirm_password'];
-    //check if passwords match
-    if($password !== $confirm_password){
-        echo "passwords do not match";
-        exit();
-    }
+    $confirm_password = trim($_POST['confirm_password']);
 
-    if(empty($email) || empty($password)){
+    // Validation
+    if(empty($email) || empty($password) || empty($confirm_password)){
         $error = "All fields are required!";
     }
     elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
@@ -35,8 +18,10 @@ $email = strtolower(trim($_POST['email']));
     elseif(strlen($password) < 6){
         $error = "Password must be at least 6 characters!";
     }
+    elseif($password !== $confirm_password){
+        $error = "Passwords do not match!";
+    }
     else {
-
         $hashed = password_hash($password, PASSWORD_DEFAULT);
 
         $sql = "INSERT INTO users (email, password) VALUES ('$email', '$hashed')";
@@ -70,32 +55,41 @@ $email = strtolower(trim($_POST['email']));
 
 <form method="POST" onsubmit="return validateForm()">
 
-    <label>Email</label>
-    <input type="email"
-           name="email"
-           id="email"
-           oninput="validateEmailLive()"
-           required>
-
+    <!-- EMAIL -->
+    <label>Email</label><br>
+    <input type="email" name="email" id="email" oninput="validateEmailLive()" required>
+    <br>
     <small id="emailMsg"></small>
 
-    <label>Password</label>
-    <input type="password"
-           name="password"
-           id="password"
-           oninput="handlePasswordInput(this.value)"
-           required>
+    <br>
 
+    <!-- PASSWORD -->
+    <label>Password</label><br>
+    <input type="password" name="password" id="password" oninput="handlePasswordInput(this.value)" required>
+    <br>
     <small id="passMsg"></small>
 
-    <!-- Strength bar (style comes from external CSS) -->
-    <div class="bar">
+    <br>
+
+    <!-- STRENGTH BAR (NO CSS, JUST BASIC DIV) -->
+    <div>
         <div id="strengthBar"></div>
     </div>
 
     <br>
 
+    <!-- CONFIRM PASSWORD -->
+    <label>Confirm Password</label><br>
+    <input type="password" name="confirm_password" id="confirm_password" oninput="checkMatch()" required>
+    <br>
+    <small id="matchMsg"></small>
+
+    <br><br>
+
+    <!-- SHOW PASSWORD -->
     <input type="checkbox" onclick="togglePassword()"> Show Password
+
+    <br><br>
 
     <button name="register">Register</button>
 
@@ -103,14 +97,13 @@ $email = strtolower(trim($_POST['email']));
 
 <script>
 
-// LIVE EMAIL VALIDATION
+// EMAIL VALIDATION
 function validateEmailLive(){
     let email = document.getElementById("email").value;
     let msg = document.getElementById("emailMsg");
-
     let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if(email.length === 0){
+    if(email === ""){
         msg.innerHTML = "";
     }
     else if(!pattern.test(email)){
@@ -123,16 +116,16 @@ function validateEmailLive(){
     }
 }
 
-// LIVE PASSWORD STRENGTH
+// PASSWORD STRENGTH
 function handlePasswordInput(password){
-
     let bar = document.getElementById("strengthBar");
     let msg = document.getElementById("passMsg");
 
     let strength = 0;
 
-    if(password.length === 0){
+    if(password === ""){
         bar.style.width = "0%";
+        bar.style.height = "10px";
         msg.innerHTML = "";
         return;
     }
@@ -142,49 +135,80 @@ function handlePasswordInput(password){
     if(password.match(/[0-9]/)) strength++;
     if(password.match(/[@$!%*?&]/)) strength++;
 
+    bar.style.height = "10px";
+
     if(strength <= 1){
         bar.style.width = "25%";
         bar.style.background = "red";
-        msg.innerHTML = "Weak ❌";
         msg.style.color = "red";
+        msg.innerHTML = "Weak ❌";
     }
     else if(strength == 2){
         bar.style.width = "50%";
         bar.style.background = "orange";
-        msg.innerHTML = "Fair ⚠️";
         msg.style.color = "orange";
+        msg.innerHTML = "Fair ⚠️";
     }
     else if(strength == 3){
         bar.style.width = "75%";
         bar.style.background = "gold";
-        msg.innerHTML = "Good 👍";
         msg.style.color = "goldenrod";
+        msg.innerHTML = "Good 👍";
     }
     else {
         bar.style.width = "100%";
         bar.style.background = "green";
-        msg.innerHTML = "Strong 💚";
         msg.style.color = "green";
+        msg.innerHTML = "Strong 💚";
+    }
+}
+// PASSWORD MATCH
+function checkMatch(){
+    let pass = document.getElementById("password").value;
+    let confirm = document.getElementById("confirm_password").value;
+    let msg = document.getElementById("matchMsg");
+
+    if(confirm === ""){
+        msg.innerHTML = "";
+    }
+    else if(pass !== confirm){
+        msg.style.color = "red";
+        msg.innerHTML = "Passwords do not match ❌";
+    }
+    else {
+        msg.style.color = "green";
+        msg.innerHTML = "Passwords match ✅";
     }
 }
 
-// FINAL VALIDATION
+// FORM VALIDATION
 function validateForm(){
     let email = document.getElementById("email").value;
     let pass = document.getElementById("password").value;
+    let confirm = document.getElementById("confirm_password").value;
 
-    if(email.trim() === "" || pass.trim() === ""){
+    if(email.trim() === ""  pass.trim() === ""  confirm.trim() === ""){
         alert("Please fill all fields");
+        return false;
+    }
+
+    if(pass !== confirm){
+        alert("Passwords do not match!");
         return false;
     }
 
     return true;
 }
 
-// SHOW/HIDE PASSWORD
+// TOGGLE PASSWORD
 function togglePassword(){
     let pass = document.getElementById("password");
-    pass.type = pass.type === "password" ? "text" : "password";
+    let confirm = document.getElementById("confirm_password");
+
+    let type = pass.type === "password" ? "text" : "password";
+
+    pass.type = type;
+    confirm.type = type;
 }
 
 </script>

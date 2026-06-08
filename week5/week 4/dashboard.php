@@ -17,7 +17,7 @@ include("db.php");
     <h2>Noella Luxe 👜✨</h2>
 
     <div>
-       
+        <a href="dashboard.php">Home 🏠</a>
         <a href="index.php">home</a>
         <a href="#featured">Featured 👜</a>
         <a href="products.php">Shop 🛍️</a>
