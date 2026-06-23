@@ -3,30 +3,13 @@ include("db.php");
 
 $error = "";
 
-
-
 if(isset($_POST['register'])){
 
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    $sql = "INSERT INTO users (email, password) VALUES ('$email', '$password')";
-    mysqli_query($conn, $sql);
-
-    echo "Registration Successful!";
-}
-if(isset($_POST['register'])){
-
-$email = strtolower(trim($_POST['email']));
-    $password = trim($_POST['password']);
-    $confirm_password = $_POST['confirm_password'];
-    //check if passwords match
-    if($password !== $confirm_password){
-        echo "passwords do not match";
-        exit();
-    }
-
-    if(empty($email) || empty($password)){
+    $email = isset($_POST['email']) ? strtolower(trim($_POST['email'])) : "";
+$password = isset($_POST['password']) ? trim($_POST['password']) : "";
+$confirm_password = isset($_POST['confirm_password']) ? trim($_POST['confirm_password']) : "";
+    // VALIDATION
+    if(empty($email) || empty($password) || empty($confirm_password)){
         $error = "All fields are required!";
     }
     elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
@@ -35,17 +18,34 @@ $email = strtolower(trim($_POST['email']));
     elseif(strlen($password) < 6){
         $error = "Password must be at least 6 characters!";
     }
+    elseif($password !== $confirm_password){
+        $error = "Passwords do not match!";
+    }
     else {
 
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        // CHECK IF EMAIL EXISTS
+        $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $check->bind_param("s", $email);
+        $check->execute();
+        $result = $check->get_result();
 
-        $sql = "INSERT INTO users (email, password) VALUES ('$email', '$hashed')";
-
-        if(mysqli_query($conn, $sql)){
-            header("Location: login.php?msg=registered");
-            exit();
+        if($result->num_rows > 0){
+            $error = "Email already exists!";
         } else {
-            $error = "Registration failed!";
+
+            // HASH PASSWORD
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+            // INSERT USER
+            $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+            $stmt->bind_param("ss", $email, $hashed);
+
+            if($stmt->execute()){
+                header("Location: login.php?msg=registered");
+                exit();
+            } else {
+                $error = "Registration failed!";
+            }
         }
     }
 }
@@ -70,32 +70,39 @@ $email = strtolower(trim($_POST['email']));
 
 <form method="POST" onsubmit="return validateForm()">
 
+    <!-- EMAIL -->
     <label>Email</label>
-    <input type="email"
-           name="email"
-           id="email"
-           oninput="validateEmailLive()"
-           required>
+    <input type="email" name="email" id="email" required>
 
-    <small id="emailMsg"></small>
-
+    <!-- PASSWORD -->
     <label>Password</label>
     <input type="password"
            name="password"
            id="password"
-           oninput="handlePasswordInput(this.value)"
+           oninput="checkStrength(this.value)"
            required>
 
     <small id="passMsg"></small>
 
-    <!-- Strength bar (style comes from external CSS) -->
     <div class="bar">
         <div id="strengthBar"></div>
     </div>
 
+    <!-- CONFIRM PASSWORD -->
+    <label>Confirm Password</label>
+    <input type="password"
+           name="confirm_password"
+           id="confirm_password"
+           required>
+
+    <small id="matchMsg"></small>
+
     <br>
 
+    <!-- SHOW PASSWORD -->
     <input type="checkbox" onclick="togglePassword()"> Show Password
+
+    <br><br>
 
     <button name="register">Register</button>
 
@@ -103,28 +110,8 @@ $email = strtolower(trim($_POST['email']));
 
 <script>
 
-// LIVE EMAIL VALIDATION
-function validateEmailLive(){
-    let email = document.getElementById("email").value;
-    let msg = document.getElementById("emailMsg");
-
-    let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if(email.length === 0){
-        msg.innerHTML = "";
-    }
-    else if(!pattern.test(email)){
-        msg.style.color = "red";
-        msg.innerHTML = "Invalid email ❌";
-    }
-    else {
-        msg.style.color = "green";
-        msg.innerHTML = "Valid email ✅";
-    }
-}
-
-// LIVE PASSWORD STRENGTH
-function handlePasswordInput(password){
+// PASSWORD STRENGTH
+function checkStrength(password){
 
     let bar = document.getElementById("strengthBar");
     let msg = document.getElementById("passMsg");
@@ -138,9 +125,9 @@ function handlePasswordInput(password){
     }
 
     if(password.length >= 6) strength++;
-    if(password.match(/[A-Z]/)) strength++;
-    if(password.match(/[0-9]/)) strength++;
-    if(password.match(/[@$!%*?&]/)) strength++;
+    if(/[A-Z]/.test(password)) strength++;
+    if(/[0-9]/.test(password)) strength++;
+    if(/[@$!%*?&]/.test(password)) strength++;
 
     if(strength <= 1){
         bar.style.width = "25%";
@@ -168,13 +155,31 @@ function handlePasswordInput(password){
     }
 }
 
+// CONFIRM PASSWORD CHECK
+document.getElementById("confirm_password").addEventListener("input", function(){
+    let pass = document.getElementById("password").value;
+    let confirm = this.value;
+    let msg = document.getElementById("matchMsg");
+    if(confirm.length === 0){
+        msg.innerHTML = "";
+    }
+    else if(pass === confirm){
+        msg.style.color = "green";
+        msg.innerHTML = "Passwords match ✅";
+    }
+    else {
+        msg.style.color = "red";
+        msg.innerHTML = "Passwords do not match ❌";
+    }
+});
+
 // FINAL VALIDATION
 function validateForm(){
-    let email = document.getElementById("email").value;
     let pass = document.getElementById("password").value;
+    let confirm = document.getElementById("confirm_password").value;
 
-    if(email.trim() === "" || pass.trim() === ""){
-        alert("Please fill all fields");
+    if(pass !== confirm){
+        alert("Passwords do not match!");
         return false;
     }
 
@@ -184,7 +189,10 @@ function validateForm(){
 // SHOW/HIDE PASSWORD
 function togglePassword(){
     let pass = document.getElementById("password");
+    let confirm = document.getElementById("confirm_password");
+
     pass.type = pass.type === "password" ? "text" : "password";
+    confirm.type = confirm.type === "password" ? "text" : "password";
 }
 
 </script>
