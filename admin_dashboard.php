@@ -43,19 +43,20 @@ if(isset($_GET['delete'])){
 <head>
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
 
 <!-- 🌸 NAVBAR -->
 <nav class="navbar">
-    <h2>Admin Dashboard 👑</h2>
+    <h2>Admin Dashboard </h2>
 
     <div>
         <a href="dashboard.php">Home 🏠</a>
         <a href="products.php">Shop 🛍️</a>
         <a href="cart.php">Cart 🛒</a>
-        <a href="logout.php">Logout 🚪</a>
+        <a href="logout.php">Logout </a>
     </div>
 </nav>
 

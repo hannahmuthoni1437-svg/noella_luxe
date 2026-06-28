@@ -55,7 +55,9 @@ $confirm_password = isset($_POST['confirm_password']) ? trim($_POST['confirm_pas
 <html>
 <head>
     <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>

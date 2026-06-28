@@ -2,6 +2,7 @@
 session_start();
 include "db.php";
 include "navbar.php";
+include "header.php";
 
 // Protect page
 if (!isset($_SESSION['user'])) {
@@ -31,9 +32,7 @@ if (isset($_GET['remove'])) {
     unset($_SESSION['cart'][$id]);
 }
 ?>
-
 <link rel="stylesheet" href="style.css">
-
 <h2>Your Cart 🛍️</h2>
 
 <a href="products.php">← Continue Shopping</a>

@@ -1,4 +1,6 @@
 <?php
+include "header.php";
+
 // navbar.php
 ?>
 <div>

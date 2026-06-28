@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("db.php");
+include "header.php";
 
 // 🔒 Protect page (admin only)
 if(!isset($_SESSION['admin'])){

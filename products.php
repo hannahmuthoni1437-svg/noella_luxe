@@ -1,5 +1,7 @@
 <?php
 include "db.php";
+include "header.php";
+
 session_start();
 
 if (!isset($_SESSION['user'])) {
@@ -10,6 +12,7 @@ if (!isset($_SESSION['user'])) {
 $result = $conn->query("SELECT * FROM products");
 ?>
 
+
 <link rel="stylesheet" href="style.css">
 
 <nav>
@@ -18,7 +21,7 @@ $result = $conn->query("SELECT * FROM products");
     <a href="logout.php">Logout</a>
 </nav>
 
-<h1>Our Bags Collection 💖👜</h1>
+<h1>Our Bags Collection 👜</h1>
 
 <div class="product-grid">
 
@@ -33,7 +36,7 @@ $result = $conn->query("SELECT * FROM products");
 
         <!-- FIXED ADD TO CART -->
         <a href="cart.php?id=<?php echo $row['id']; ?>">
-            <button>Add to Cart 💖</button>
+            <button>Add to Cart </button>
         </a>
 
     </div>

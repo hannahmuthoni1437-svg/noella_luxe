@@ -1,6 +1,7 @@
 <?php
 include "navbar.php";
 include "db.php";
+include "header.php";
 session_start();
 $order = $_SESSION['order'] ?? null;
 ?>

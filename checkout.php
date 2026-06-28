@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "db.php";
+include "header.php";
 
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
@@ -12,7 +13,7 @@ $total = 0;
 ?>
 <link rel="stylesheet" href="style.css">
 <div class="page-box">
-<h2>Checkout 💖</h2>
+<h2>Checkout </h2>
 
 <table border="1" cellpadding="10">
 <tr>
